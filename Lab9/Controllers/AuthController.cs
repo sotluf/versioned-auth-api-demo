@@ -17,7 +17,7 @@ public class AuthController(IUserService userService) : ControllerBase
 {
     private readonly IUserService _userService = userService;
 
-
+    // POST: api/Auth/login
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
@@ -44,7 +44,7 @@ public class AuthController(IUserService userService) : ControllerBase
         return Ok(new { Token = token });
     }
 
-
+    // POST: api/Auth/register
     [HttpPost("register")]
     public async Task<IActionResult> Register(User user)
     {
@@ -54,6 +54,7 @@ public class AuthController(IUserService userService) : ControllerBase
     }
 
 
+    // Helper method to generate JWT token
     private string GenerateJwtToken(User user)
     {
         const string tokenKey = "KeyKeyKeyKeyKeyKeyKeyKeyKeyKeyKeyKey";
@@ -78,6 +79,7 @@ public class AuthController(IUserService userService) : ControllerBase
     }
 }
 
+// DTO for login request
 public class LoginRequest
 {
     public required string Email { get; init; }

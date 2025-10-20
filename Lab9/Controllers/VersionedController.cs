@@ -11,7 +11,7 @@ public class VersionedController(IVersionedService service) : ControllerBase
 {
     private readonly IVersionedService _service = service;
 
-
+    // Version 1.0 returns an integer
     [HttpGet]
     [ApiVersion("1.0", Deprecated = true)]
     public Task<int> GetV1()
@@ -19,7 +19,7 @@ public class VersionedController(IVersionedService service) : ControllerBase
         return _service.GetIntegerAsync();
     }
 
-
+    // Version 2.0 returns a string
     [HttpGet]
     [ApiVersion("2.0")]
     public Task<string> GetV2()
@@ -27,7 +27,7 @@ public class VersionedController(IVersionedService service) : ControllerBase
         return _service.GetTextAsync();
     }
 
-
+    // Version 3.0 returns an Excel file
     [HttpGet]
     [ApiVersion("3.0")]
     public async Task<IActionResult> GetV3()

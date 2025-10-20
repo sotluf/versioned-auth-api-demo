@@ -10,6 +10,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
+// API Versioning
 services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
@@ -18,11 +19,13 @@ services.AddApiVersioning(options =>
     options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
 });
 
+// Controllers
 services.AddControllers();
 services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {
+        // JWT Bearer Authentication
         options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             In = ParameterLocation.Header,
@@ -31,6 +34,7 @@ services
             Type = SecuritySchemeType.ApiKey
         });
 
+        // Apply JWT Bearer Authentication globally
         options.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
@@ -46,11 +50,13 @@ services
             }
         });
 
+        // Swagger Docs for each API version
         options.SwaggerDoc("v1",
             new OpenApiInfo { Title = "API v1.0", Version = "1.0", Description = "Deprecated Version" });
         options.SwaggerDoc("v2", new OpenApiInfo { Title = "API v2.0", Version = "2.0" });
         options.SwaggerDoc("v3", new OpenApiInfo { Title = "API v3.0", Version = "3.0" });
 
+        // Include only endpoints relevant to the specific API version
         options.DocInclusionPredicate((version, apiDescription) =>
         {
             var versions = apiDescription.ActionDescriptor.EndpointMetadata
@@ -70,6 +76,7 @@ services
     .AddSingleton<IUserService, UserService>()
     .AddSingleton<IVersionedService, VersionedService>();
 
+// Authentication, authorization
 services.AddAuthentication()
     .AddJwtBearer(options =>
     {
@@ -84,6 +91,7 @@ services.AddAuthentication()
     });
 services.AddAuthorization();
 
+// Build
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -101,7 +109,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-
+// Operation filter to add version header parameter
 public class VersionHeaderFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
